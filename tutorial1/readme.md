@@ -72,7 +72,7 @@ polls/
     views.py
 ```
 
-<br>
+<br><br>
 <hr>
 
 ### 데이터베이스 설치
@@ -167,7 +167,107 @@ py manage.py runserver
 - 관리자 페이지에 테이블을 추가하여 관리하고 싶으면 admin.py에 모델을 추가하면 된다  
 - 변경 히스토리도 볼 수 있다
 
+<br><br>
+
+---
+
 ### 장고 MTV
 
 ![alt text](image.png)
 
+### URL로 View 보여주기
+
+###### tutorial1/urls.py
+```
+# polls/ 다음은 polls 내부에서 지정한 url로 포함시키겠다
+urlpatterns = [
+    path("polls/", include("polls.urls")),
+    path('admin/', admin.site.urls),
+]
+```
+
+###### tutorial1/polls/urls.py
+```
+from django.urls import path
+
+from . import views
+
+// 이 path 경로들을 urlconf라고 부른다
+urlpatterns = [
+    # ex: /polls/
+    path("", views.index, name="index"),
+    # ex: /polls/5/
+    path("<int:question_id>/", views.detail, name="detail"),
+    # ex: /polls/5/results/
+    path("<int:question_id>/results/", views.results, name="results"),
+    # ex: /polls/5/vote/
+    path("<int:question_id>/vote/", views.vote, name="vote"),
+]
+// <int:question_id> int 형식이고 동적으로 움직이는 값
+// view.detail은 뷰의 디테일을 보여줌 
+```
+
+###### tutorial1/polls/views.py
+```
+from django.shortcuts import render
+
+# Create your views here.
+from django.http import HttpResponse
+
+def index(request):
+    print('클라이언트의 요청을 받음')
+    # input('요청을 처리하는 상태(완료하려면 엔터)')
+    return HttpResponse("Hello, world. You're at the polls index.")
+
+def detail(request, question_id):
+    return HttpResponse("You're looking at question %s." % question_id)
+
+
+def results(request, question_id):
+    response = "You're looking at the results of question %s."
+    return HttpResponse(response % question_id)
+
+
+def vote(request, question_id):
+    return HttpResponse("You're voting on question %s." % question_id)
+```
+
+### DB에 저장한 내용 보여주기
+
+###### tutorial1/polls/views.py
+    
+```
+def index(request):
+    print('클라이언트의 요청을 받음')
+    latest_question_list = Question.objects.order_by("-pub_date")[:5]
+    output = ", ".join([q.question_text for q in latest_question_list])
+    return HttpResponse(output)
+```
+
+- 하드코딩으로 되어 있지 html로 다듬어지지 않은 뷰다
+
+###### tutorial1/polls/templates/polls/index.html
+```
+{% if latest_question_list %}
+    <ul>
+    {% for question in latest_question_list %}
+        <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+```
+- 템플릿 폴더 안에 폴더를 하나 더 만드는게 좋다
+- 장고는 서로 다는 템플릿들을 같은 템플릿으로 인식하기 때문에 템플릿 안에 이름이 중복되면 오류가 생기기 때문
+
+### 404페이지 만들기
+```
+from django.shortcuts import get_object_or_404, render
+.
+.
+.
+question = get_object_or_404(Question, pk=question_id)
+return render(request, "polls/detail.html", {"question": question})
+```
+- get_object_or_404: 있으면 polls/detail.html을, 없으면 404를 보여준다
