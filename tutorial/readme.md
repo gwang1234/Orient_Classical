@@ -271,3 +271,7 @@ question = get_object_or_404(Question, pk=question_id)
 return render(request, "polls/detail.html", {"question": question})
 ```
 - get_object_or_404: 있으면 polls/detail.html을, 없으면 404를 보여준다
+
+<br>
+
+![alt text](image-1.png)
