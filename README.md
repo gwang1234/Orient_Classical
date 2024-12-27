@@ -11,7 +11,7 @@
 <br>
 
 ### tutorial1
-- 24.12.21 ~ 
+- 24.12.21 ~ 24.12.27
 - Django를 처음 학습하며 개념 이해를 위해 제작한 프로젝트
 - `https://docs.djangoproject.com/`장고 공식사이트를 참고하여 만듬
 - DB는 sqlite3 활용
