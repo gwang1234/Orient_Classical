@@ -6,10 +6,7 @@
 
 > 개인 프로젝트
 
-> 기술스택
-- <img src="https://img.shields.io/badge/Python-3766AB?style=flat-square&logo=Python&logoColor=white"/> 3.12.8
-- <img src="https://img.shields.io/badge/django-092E20?style=flat-square&logo=django&logoColor=#092E20"/>5.1.4
-- <img src="https://img.shields.io/badge/AWS-232F3E?style=flat-square&logo=amazonwebservices&logoColor=#232F3E"/>
+> 기술스택: `python 3.12.8`, `Django 5.1.4`
 
 <br>
 

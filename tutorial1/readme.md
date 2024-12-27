@@ -144,3 +144,30 @@ python manage.py migrate
 ```
 py manage.py shell
 ```
+ORM: 해당 객체와 해당 테이블을 매핑하는 기술(번역)  
+
+API에서 이중 밑줄(__)을 이용한 필드 조회: 필터링, 관계 조회, 또는 특정 조건을 설정할 때 사용 됨 
+
+### Django 관리자
+- 사이트를 만들때 관리자 페이지를 따로 만들어 작업하는 것은 지루하다
+- 장고는 관리자용 인터페이스를 자동으로 생성시켜준다
+
+<br>
+
+> 관리자 생성하기
+```
+py manage.py createsuperuser
+Username: admin
+Email address: admin@example.com
+Password: **********
+Password (again): *********
+Superuser created successfully.
+py manage.py runserver
+```
+- 관리자 페이지에 테이블을 추가하여 관리하고 싶으면 admin.py에 모델을 추가하면 된다  
+- 변경 히스토리도 볼 수 있다
+
+### 장고 MTV
+
+![alt text](image.png)
+
