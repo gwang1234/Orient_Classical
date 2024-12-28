@@ -32,7 +32,7 @@ py manage.py createsuperuser
 py mange.py startapp 앱이름
 ```
 
-*****
+<div style="width: 100%; height: 1px; background-color: #444;"></div>
 
 <br>
 
@@ -46,6 +46,19 @@ from . import views
 
 urlpatterns = [
     path('',views.index)
+]
+```
+
+##### setting에 앱 등록
+```
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'ex_view.apps.ExViewConfig', # 앱 등록
 ]
 ```
 
@@ -67,3 +80,10 @@ urlpatterns = [
     path('ex_view/', include('ex_view.exurls')),
 ]
 ```
+<div style="width: 100%; height: 1px; background-color: #444;"></div>
+
+<br>
+
+- 세션은 각 브라우저들을 구분하기 위해 클라이언트에 전달됨
+- 클라이언트에 전달된 세션은 쿠키로 저장 
+- render로 템플릿 뷰를 보여줄때, 전달할 값은 딕셔너리 형태로 전달 
