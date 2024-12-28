@@ -1,5 +1,4 @@
 ## 장고 튜토리얼
-> 참고: [장고 튜토리얼](https://docs.djangoproject.com/en/5.1/)
 
 <br>
 
@@ -275,3 +274,9 @@ return render(request, "polls/detail.html", {"question": question})
 <br>
 
 ![alt text](image-1.png)
+
+<br>
+
+> 참고1: [장고 튜토리얼](https://docs.djangoproject.com/en/5.1/)  
+
+> 참고2: [참고영상](https://www.youtube.com/watch?v=Wd7Mov7gGZ4&list=PLpzDq-W37heQVO-5JnVMp1blZH3M0lo5Z&index=1)
