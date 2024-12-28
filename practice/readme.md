@@ -32,7 +32,7 @@ py manage.py createsuperuser
 py mange.py startapp 앱이름
 ```
 
----
+*****
 
 <br>
 
