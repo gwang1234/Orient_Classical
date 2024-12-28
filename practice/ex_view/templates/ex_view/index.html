@@ -13,6 +13,15 @@
         <h3>Request 이해하기(함수형 뷰)</h3>
         <ol>
             <li>Get요청1: <a href="get1/?n1=10&n2=20&n3=hello">get1</a></li>
+            <li>Get요청2: <a href="get2/10/20/hello">get2</a></li>
+            <li>
+                <form action="post1/" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="n1">
+                    <input type="text" name="n2">
+                    <input type="submit" value="요청 및 전송">
+                </form>
+            </li>
         </ol>
     </div>
 </body>
