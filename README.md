@@ -11,12 +11,10 @@
 <br>
 
 ### practice
-<hr>
 - 24.12.28 ~
 - Django의 개념을 끝내기 위해 연습, 개념 확실히 파악하기 
 
 ### tutorial
-<hr>
 - 24.12.21 ~ 24.12.27
 - Django를 처음 학습하며 쉽게 개념 이해하기 위해 제작한 프로젝트
 - `https://docs.djangoproject.com/`장고 공식사이트를 참고하여 만듬
