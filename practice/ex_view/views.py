@@ -27,7 +27,6 @@ def get2(request, n1, n2, n3):
     return HttpResponse('get2')
 
 def post1(request):
-    print(request.GET)
     keys = request.POST.keys()
     for key in keys:
         value = request.POST[key]
@@ -36,3 +35,16 @@ def post1(request):
     num = int(request.POST['n1']) + int(request.POST['n2'])
     print(num)
     return HttpResponse('post1')
+
+def post2(request, msg, n):
+    print("msg: ", msg)
+    print("n: ", n)
+    keys = request.POST.keys()
+    for key in keys:
+        value = request.POST[key]
+        print(f'{key}:{value}')
+    return HttpResponse('post2')
+
+def getpost1(request):
+    print(request.method)
+    return HttpResponse('getpost1')
