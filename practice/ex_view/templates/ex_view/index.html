@@ -14,6 +14,8 @@
         <ol>
             <li>Get요청1: <a href="get1/?n1=10&n2=20&n3=hello">get1</a></li>
             <li>Get요청2: <a href="get2/10/20/hello">get2</a></li>
+            <li>Get요청1: <a href="{% url 'exview:get1' %}?n1=10&n2=20&n3=hello">get1</a></li>
+            <li>Get요청2: <a href="{% url 'exview:get2' '11' '22' 'hello' %}">get2</a></li>
             <li>Post요청1: 
                 <form action="post1/" method="post">
                     {% csrf_token %}
