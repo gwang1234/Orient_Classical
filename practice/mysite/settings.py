@@ -62,6 +62,7 @@ TEMPLATES = [
         'DIRS': [template_dir], # 템플릿 검색 경로 지정
         'APP_DIRS': True,
         'OPTIONS': {
+            # 'string_if_invalid' : 'Unknown Value!', # 값이 없으면 나타나는 값 
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
