@@ -98,3 +98,15 @@ urlpatterns = [
 ### reverse
 - url 패턴의 이름으로 url을 역으로 찾아내는 기능
 - url 하드코딩을 피하고, 코드 변경시, 유지보수를 더 쉽게 할 수 있다 
+
+### Template
+- 장고 템플릿 코드는 Html + 파이썬 코드를 섞어서 정의 
+- 파이썬 코드와 템플릿 코드는 다름 
+- 템플릿 저장경로 중요 
+- 장고 템플릿 파일 검색 
+    1. 장고는 TEMPLATE_DIR 및 INSTALLED_APPS에서 지정된 디렉터리 검색
+        - TEMPLATE_DIR에서 먼저 찾고 못 찾으면 INSTALLED_APPS에서 검색
+    2. 프로젝트 설정파일 중 settings.py에 정의 
+    3. 여러 디렉터리 지정 가능
+- render로 템플릿 전달
+- {{ }}: 딕셔너리로 저장된 템플릿 변수 전달
