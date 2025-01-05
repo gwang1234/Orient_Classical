@@ -106,6 +106,7 @@ urlpatterns = [
 - 장고 템플릿 파일 검색 
     1. 장고는 TEMPLATE_DIR 및 INSTALLED_APPS에서 지정된 디렉터리 검색
         - TEMPLATE_DIR에서 먼저 찾고 못 찾으면 INSTALLED_APPS에서 검색
+        - settings.py에 DIR = []에서 먼저 찾고, APP_DIR에 다음으로 찾는다 
     2. 프로젝트 설정파일 중 settings.py에 정의 
     3. 여러 디렉터리 지정 가능
 - render로 템플릿 전달

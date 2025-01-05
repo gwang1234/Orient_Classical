@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ex_view.apps.ExViewConfig', # 앱 등록
+    'ex_template.apps.ExTemplateConfig',
 ]
 
 MIDDLEWARE = [

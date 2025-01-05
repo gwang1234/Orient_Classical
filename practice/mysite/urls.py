@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('ex_view/', include('ex_view.exurls')),
     path('', views.index),
+    path('ex_template/', include('ex_template.exurls')),
 ]
