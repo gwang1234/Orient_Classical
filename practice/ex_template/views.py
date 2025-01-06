@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.urls import reverse
 
 # Create your views here.
 
@@ -68,3 +69,16 @@ def ex04(request):
         'info_list' : info_list,
     }
     return render(request, 'ex_template/ex04.html', context)
+
+def ex05(request):
+    url_list = [
+        reverse("ex_template:index"),
+        reverse("ex_template:ex01"),
+        reverse("ex_template:ex02"),
+        reverse("ex_template:ex03"),
+        reverse("ex_template:ex04"),
+        reverse('ex_template:ex05path', args=(10, 'kim')),
+    ]
+    return render(request, 'ex_template/ex05.html',
+                  {'url_list':url_list, 'n':10, 'name':'kim'})
+    

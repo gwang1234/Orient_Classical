@@ -1,0 +1,9 @@
+
+<ul>
+{% for url in url_list %}
+    <li>url: {{url}}</li>
+{% endfor %}
+</ul>
+{% url 'ex_template:index' %}<br>
+{% url 'ex_template:ex05path' '20' 'park'%}<br>
+{% url 'ex_template:ex05path' n name %}
