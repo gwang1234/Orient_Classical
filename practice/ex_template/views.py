@@ -31,3 +31,40 @@ def ex02(request):
     data = { 'val1': val1, 'lst':lst, 'tup':tup, 'dic':dic, 
             'bio':bio, 'ls':ls, 'lss':lss }
     return render(request, 'ex_template/ex02.html', data)
+
+class Info:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        
+    def __str__(self):
+        return f'Info[name={self.name}, age={self.age}]'
+
+def ex03(request):
+    name_list = ['홍길동', '이순신', '임꺽정', '강감찬']
+    info_list = [
+        Info('홍길동', 33),
+        Info('이순신', 34),
+        Info('임꺽정', 23),
+        Info('강감찬', 89),
+    ]
+    context = {
+        'name_list' : name_list,
+        'info_list' : info_list,
+    }
+    return render(request, 'ex_template/ex03.html', context)
+
+def ex04(request):
+    name_list = ['홍길동', '이순신', '임꺽정', '강감찬']
+    info_list = [
+        Info('홍길동', 33),
+        Info('이순신', 34),
+        Info('임꺽정', 23),
+        Info('강감찬', 89),
+    ]
+    context = {
+        'value': 100,
+        'name_list' : name_list,
+        'info_list' : info_list,
+    }
+    return render(request, 'ex_template/ex04.html', context)
