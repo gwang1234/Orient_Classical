@@ -29,6 +29,12 @@
 
 <br><br>
 
+### 파이썬 문법
+- str.maketrans: 문자열 변환을 위한 `매핑 테이블`을 생성
+- translate: 매핑된 테이블에 따라 문자열이 변환 
+
+<br><br><br><br>
+
 ### 정적 페이지 크롤링
 1. 데이터 받아오기
 2. 데이터 뽑아내기  
@@ -75,8 +81,22 @@ header = {
 - 인증오류로 인증을 비활성화하면 된다 
 - verify=False
 
-<br><br>
+<br><br><br><br>
 
+### 셀레니움
+- driver.get - 원하는 페이지로 이동 
+- driver.back - 뒤로가기
+- driver.forward - 앞으로가기
+- driver.refresh - 드라이버 새로고침
+- driver.current_url - 현재 url 확인 
+- driver.title - 페이지 제목 확인
+- driver.close - 현재 창 닫기
+- driver.quit - 모든 창을 닫고, 웹트라이버 세션 종료
+- `driver.find_element` - 웹페이지에서 첫번째로 일치하는 태그를 찾아 반환해줌 
+  - 일치하는 태그가 없다면 `NoSuchElementException` 반환
 
+#### NoSuchWindowException
+- 드라이버가 브라우저 창을 참조하지 못할때 발생하는 오류
+- 창이 열려있는지 확인하기 
 
 
