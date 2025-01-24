@@ -10,7 +10,7 @@
 
 ### 개발환경
 - 백엔드: python 3.12.8, Django 5.1.4
-- 프론트: HTML, React, styled-components
+- 프론트: HTML/CSS, JS
 - 버전관리: Github
 
 ### 프로젝트 구조
