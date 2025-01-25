@@ -1,65 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../../static/css/main.css">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
-</head>
-<body>
-    <header>
-        <div class="header">
-            <div class="me">
-                <div><i class='bx bx-user'></i> <span>김민정</span></div>
-                <div><i class='bx bx-envelope'></i> <span>qoi11@naver.com</span></div>
-                <div><i class='bx bx-code-block'></i> <span>백엔드 개발자</span></div>
-            </div>
-            <div class="category">
-                <h1><i class='bx bxs-file-pdf'></i> <a href="#"><span>직독 한문 번역</span></a></h1>
-                <h1><i class='bx bx-game'></i> <a href="#"><span>1800 한자 게임</span></a></h1>
-            </div>
+{% extends "./header.html" %}
+{% block content %}
+    <div class="hanja">
+        <div class="title">
+            <div class="overlay"></div>
+            <div class="text">직독<span>讀</span> 한문 번역</div>
         </div>
-    </header>
-    <section>
-        <div class="hanja">
-            <div class="title">
-                <div class="overlay"></div>
-                <div class="text">직독<span>讀</span> 한문 번역</div>
-            </div>
-            <div class="section">
-                <div class="translate">
-                    <div class="check">
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="checkbox1" checked>
-                            한문 번역
-                        </label>
-                        <label class="custom-checkbox">
-                            <input type="checkbox" id="checkbox2">
-                            한문 분석
-                        </label>
-                    </div>
-                    <div class="put">
-                        <div>+</div>
-                        <div>이곳에 pdf 파일을 올려주세요</div>
-                    </div>
+        <div class="section">
+            <div class="translate">
+                <div class="check">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="checkbox1" checked>
+                        한문 번역
+                    </label>
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="checkbox2">
+                        한문 분석
+                    </label>
                 </div>
-                <div class="explain">
-                    <p>이용 방법</p>
-                    <p>
-                        <div>1. 원하는 PDF를 체크박스로</div>
-                        <div>선택해주세요.</div><br><br>
-                        <div>2. 한문번역은 PDF의 한자를 </div>
-                        <div>직독으로 번역하고,</div> 
-                        <div> 한문분석은 PDF에 자주 나오는 한문을 </div> 
-                        <div>분석하여 그래프로 보여드립니다.</div><br><br>
-                        <div>3. PDF를 올리시면 해당 PDF를</div>
-                        <div>받으실 수 있습니다.</div>
-
-                    </p>
+                <div class="put">
+                    <div>+</div>
+                    <div>이곳에 pdf 파일을 올려주세요</div>
                 </div>
             </div>
+            <div class="explain">
+                <p>이용 방법</p>
+                <p>
+                    <div>1. 원하는 PDF를 체크박스로</div>
+                    <div>선택해주세요.</div><br><br>
+                    <div>2. 한문번역은 PDF의 한자를 </div>
+                    <div>직독으로 번역하고,</div> 
+                    <div> 한문분석은 PDF에 자주 나오는 한문을 </div> 
+                    <div>분석하여 그래프로 보여드립니다.</div><br><br>
+                    <div>3. PDF를 올리시면 해당 PDF를</div>
+                    <div>받으실 수 있습니다.</div>
+                </p>
+            </div>
         </div>
-    </section>
-</body>
-</html>
+    </div>
+{% endblock %}

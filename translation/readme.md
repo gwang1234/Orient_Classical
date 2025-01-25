@@ -1,7 +1,13 @@
-#  직독한문번역
+#  직독 한문 번역
+
+<br>
 
 > 개인 프로젝트  
 > 개발기간: 2025.01.24 ~ 
+
+<img src="./hanja/static/img/site.png" width="500" height="auto">
+
+<br>
 
 ### 프로젝트 소개
 - 한자가 포함된 PDF 파일을 한 줄씩 번역하여 번역된 PDF 파일로 생성한 후 사용자에게 제공합니다.
@@ -14,5 +20,48 @@
 - 버전관리: Github
 
 ### 프로젝트 구조
+```
+│   db.sqlite3
+│   manage.py
+│   readme.md
+│
+├───hanja
+│   │   admin.py
+│   │   apps.py
+│   │   models.py
+│   │   tests.py
+│   │   urls.py
+│   │   views.py
+│   │   __init__.py
+│   │
+│   ├───migrations
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           __init__.cpython-312.pyc
+│   │
+│   ├───static
+│   │   ├───css
+│   │   │       main.css
+│   │   │
+│   │   └───img
+│   │           hanji.png
+│   │           site.png
+│   │
+│   ├───templates
+│   │   └───hanja
+│   │           main.html
+│   │
+│   └───__pycache__pyc
+│
+└───mysite
+    │   asgi.py
+    │   settings.py
+    │   urls.py
+    │   wsgi.py
+    │   __init__.py
+    │
+    └───__pycache__
+```
 
 ### 트러블 슈팅 
