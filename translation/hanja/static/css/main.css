@@ -121,14 +121,38 @@ h1 {
 }
 
 .title {
-    background-color: gold;
+    position: relative;  /* 상위 요소를 기준으로 절대 위치를 설정 */
     width: 100%;
     height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: #4E4C3E;
+}
+
+.overlay {
+    position: absolute;  /* 이미지가 타이틀 영역 위에 위치 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: url('../img/hanji.png') no-repeat center center;
+    background-size: cover;
+    opacity: 0.5; /* 투명도 조절 */
+    z-index: 1;  /* 이미지가 텍스트 아래에 있도록 설정 */
+}
+
+.text {
+    position: absolute;  /* 텍스트를 이미지 위에 배치 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);  /* 텍스트를 정확히 중앙에 배치 */
+    z-index: 2;  /* 텍스트가 이미지 위에 오도록 설정 */
+    color: #353535;
     font-size: 32px;
     font-weight: 700;
+}
+
+.text span {
+    font-size: 24px;
+    color: #cecece;
 }
 
 .section {
@@ -139,11 +163,29 @@ h1 {
 }
 
 .explain {
-    background-color: #ccc;
+    margin-top: 30px;
+    margin-bottom: 50px;
+    background-color: #5a582b;
+    padding: 15px;
     width: 300px;
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.explain p:nth-of-type(1) {
+    font-weight: 800;
+}
+
+.explain p:nth-of-type(2) {
+    margin-top: 10px;
+    font-size: 14px;
 }
 
 .translate {
+    /* margin-top: 100px; */
     height: 79.5vh;
     width: 500px;
     /* background-color: yellowgreen; */
@@ -191,3 +233,4 @@ input[type="checkbox"] {
     font-size: 36px;
     font-weight: 800;
 }
+
