@@ -1,9 +1,10 @@
 * {
     box-sizing: border-box;
     text-decoration: none;
+    white-space: nowrap;    
 }
 
-body {
+body, html {
     margin: 0;  
     display: initial;  
     height: 100%;
@@ -24,12 +25,11 @@ h1 {
 
 .header {
     width: 70%;
-    /* background-color: gold; */
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 5px;
 }
 
 .me {
@@ -77,8 +77,117 @@ h1 {
     transition: color 0.2s ease-in-out;
 }
 
+@media (min-resolution: 2.5dppx) {  
+    .me {
+        display: none;
+    }
+
+    .category {
+        width: 100%;
+        display: flex;
+        flex-direction: row; 
+        justify-content: center; 
+        align-items: center; 
+    }
+
+}
+
+@media (max-width: 768px) {
+    .me {
+        display: none;  
+    }
+
+    .category {
+        width: 100%;
+        display: flex;
+        flex-direction: row; 
+        justify-content: center; 
+        align-items: center; 
+        text-align: center;
+    }
+}
+
+
+
+
+
+
+
+
+.hanja {
+    /* height: 94vh;  
+    width: 100%;
+    background-color: #3498db; */
+}
+
+.title {
+    background-color: gold;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 30px;
+}
+
+.explain {
+    background-color: #ccc;
+    width: 300px;
+}
+
+.translate {
+    height: 79.5vh;
+    width: 500px;
+    /* background-color: yellowgreen; */
+    display: flex;
+    flex-direction: column;
+}
+
+
+.check {
+    margin-top: 80px;
+    display: flex;
+    gap: 20px;   
+}
+
+.custom-checkbox {
+    cursor: pointer; 
+    font-size: 16px; 
+}
+
 input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    accent-color: #3498db;  /* 체크박스 색상 변경 (지원되는 브라우저) */
+    accent-color: #899c93; 
+}
+
+.put {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* background-color: gold; */
+    height: 200px;
+    border: #ccc 3px solid;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.put div {
+    color: #ccc;
+    font-size: 18px;
+}
+
+.put div:nth-of-type(1) {
+    font-size: 36px;
+    font-weight: 800;
 }
