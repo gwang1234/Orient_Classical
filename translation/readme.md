@@ -5,7 +5,9 @@
 > 개인 프로젝트  
 > 개발기간: 2025.01.24 ~ 
 
-<img src="./hanja/static/img/site.png" width="500" height="auto">
+<br>
+
+<img src="./hanja/static/img/site.png" width="1000" height="auto">
 
 <br>
 
