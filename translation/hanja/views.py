@@ -21,7 +21,7 @@ import time
 
 # Create your views here.
 def index(request):
-    hanja_entry = Hanja.objects.get(field_hanja='一').mean
+    hanja_entry = Hanja.objects.get(hanja='一').mean
     print(hanja_entry)
     
     return render(request, 'hanja/main.html')
