@@ -1,3 +1,4 @@
 crawling/**/*.xlsx
 crawling/hanja.ipynb
+crawling/hanja.csv
 05.네이버로그인자동화.ipynb

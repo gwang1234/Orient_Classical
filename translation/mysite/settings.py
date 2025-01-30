@@ -22,18 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-+4oary7j6&_$im3wgm_zw3++0452l0rb3$ah*wg-%d^s2^d0zm'
-SECRET_KEY = my_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-import os
+# import os
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # 'static' 폴더를 정적 파일 디렉토리로 지정
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static'),  # 'static' 폴더를 정적 파일 디렉토리로 지정
+# ]
 
 
 # Application definition
@@ -102,7 +101,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 #     }
 # }
 DATABASES = my_settings.DATABASES
-
+SECRET_KEY = my_settings.SECRET_KEY
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

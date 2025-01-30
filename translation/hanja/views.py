@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from PyPDF2 import PdfReader
 import re
+from .models import Hanja
 
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -10,7 +11,6 @@ from reportlab.platypus import Paragraph
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame
 from reportlab.lib.units import cm
-from reportlab.platypus import Spacer
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -21,6 +21,9 @@ import time
 
 # Create your views here.
 def index(request):
+    hanja_entry = Hanja.objects.get(field_hanja='一').mean
+    print(hanja_entry)
+    
     return render(request, 'hanja/main.html')
 
 def upload_pdf(request):
@@ -61,7 +64,14 @@ def upload_pdf(request):
                     if (only_hanja == ""):
                         L.append(Paragraph(line, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
                     else:
-                        L.append(Paragraph(line, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
+                        # L.append(Paragraph(line, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
+                        # analysis = "( "
+                        # for hanja in only_hanja:
+                        #     try:
+                        #         hanja_entry = Hanja.objects.get(hanja=hanja)
+                        #         mean = hanja_entry.mean
+                        #     except Hanja.DoesNotExist:
+                        #         mean = None  
                         L.append(Paragraph(only_hanja, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
             
         doc = BaseDocTemplate(str('hanja_test.pdf'), pagesize=A4)
