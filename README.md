@@ -6,7 +6,7 @@
 
 > 개인 프로젝트
 
-> 기술스택: `python 3.12.8`, `Django 5.1.4`, `HTML/CSS`, `JS`
+> 기술스택: `python 3.12.8`, `Django 5.1.4`, `Mysql 8.0.36`, `HTML/CSS`, `JS`
 
 <br>
 
