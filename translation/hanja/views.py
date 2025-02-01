@@ -3,6 +3,11 @@ from django.http import HttpResponse
 from PyPDF2 import PdfReader
 import re
 from .models import Hanja
+from collections import Counter
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -26,13 +31,13 @@ from urllib.parse import unquote
 def index(request):
     return render(request, 'hanja/main.html')
 
-# 번역 함수
-def traslation(request):
-        # 폰트 지정 
-    pdfmetrics.registerFont(TTFont("맑은고딕", "malgun.ttf"))
 
-    # 프레임 지정 
-    text_frame = Frame(
+
+
+# pdf 규격 정의
+def pdf_frame():
+
+    return Frame(
                 x1=2.54 * cm ,  # From left
                 y1=2.54 * cm ,  # From bottom
                 height=24.16 * cm,
@@ -44,6 +49,27 @@ def traslation(request):
                 showBoundary=0,
                 id='text_frame'
             )
+
+
+
+
+# pdf 생성
+def pdf_generation(L: list):
+    doc = BaseDocTemplate(str('7 술이.pdf'), pagesize=A4)
+    frontpage = PageTemplate(id='FrontPage',
+                                frames=[pdf_frame()]
+                    )
+    doc.addPageTemplates(frontpage)
+    doc.build(L)
+
+
+
+
+# 번역 함수
+def traslation(request):
+    
+    # 폰트 지정 
+    pdfmetrics.registerFont(TTFont("맑은고딕", "malgun.ttf"))
     
     L=[]
 
@@ -57,7 +83,7 @@ def traslation(request):
             lines = text.split('\n')
             for line in lines:
                 # 한글, 숫자, 영어, 특수문자 제거
-                only_hanja = re.sub(r'[A-z가-힣0-9\s!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
+                only_hanja = re.sub(r'[A-z가-힣0-9\s~"!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
                 if line.strip() == "":
                     continue
                     # L.append(Spacer(1, 20))
@@ -66,6 +92,7 @@ def traslation(request):
                 else:
                     if (only_hanja == ""):
                         L.append(Paragraph(line, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
+                        L.append(Spacer(1, 20))
                     else:
                         L.append(Paragraph(line, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
                         analysis = "[ "
@@ -99,18 +126,83 @@ def traslation(request):
                         
                         analysis += "]"      
                         L.append(Paragraph(analysis, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
-                        L.append(Spacer(1, 20))
-                        
+                        # L.append(Spacer(1, 20))
             
-        doc = BaseDocTemplate(str('만법전.pdf'), pagesize=A4)
-        frontpage = PageTemplate(id='FrontPage',
-                                frames=[text_frame]    # 4. 프레임 지정 부분에서 text_frame 생성했음
-                    )
-        doc.addPageTemplates(frontpage)
-        doc.build(L)
-        
+        pdf_generation(L)
+
+
+
+
+# 한자 분석 
 def hanja_analysis(request):
-    return
+    
+    L=[]
+    
+    if request.method == 'POST' and request.FILES.get('pdf'):
+        pdf = request.FILES.get("pdf")
+        reader = PdfReader(pdf)
+        pages = reader.pages
+        
+        for page in pages:
+            text = page.extract_text()
+            lines = text.split('\n')
+            for line in lines:
+                # 한글, 숫자, 영어, 특수문자 제거
+                hanjas = re.sub(r'[A-z가-힣0-9\s~"!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
+                for hanja in hanjas:
+                    L.append(hanja)
+        
+        count = Counter(L)
+        sorted_desc = sorted(count.items(), key=lambda x: x[1], reverse=True)
+        if len(sorted_desc) > 20:
+            sorted_desc = sorted_desc[:20]
+        df = pd.DataFrame(sorted_desc, columns=['한자', '빈도수'])
+        
+        labels = df['한자']
+        frequency = df['빈도수']
+        
+        fig = plt.figure(figsize=(8,8)) ## 캔버스 생성
+        fig.set_facecolor('white')
+        ax = fig.add_subplot()
+        
+        pie = ax.pie(frequency, ## 파이차트 출력
+        startangle=90, ## 시작점을 90도(degree)로 지정
+        counterclock=False, ## 시계 방향으로 그린다.
+        autopct=lambda p : '{:.2f}%'.format(p), ## 퍼센티지 출력
+        wedgeprops=dict(width=0.5) ## 중간의 반지름 0.5만큼 구멍을 뚫어준다.
+        )
+        font_path = "C:/Windows/Fonts/malgun.ttf"  # 'Malgun Gothic' 폰트 경로
+        font_prop = fm.FontProperties(fname=font_path)
+        plt.title("한자 빈도수", fontproperties=font_prop, fontsize=20)
+        plt.rcParams['font.family'] = 'Malgun Gothic'
+    
+        plt.legend(pie[0],labels) ## 범례 표시
+        plt.savefig("chart.png", dpi=300)
+        
+        for i in range(1, len(sorted_desc)+1):
+            hanja = sorted_desc[i-1][0]
+            mean = ""
+            try:
+                mean = Hanja.objects.get(hanja=hanja).mean
+            except Hanja.DoesNotExist:
+                driver = webdriver.Chrome()
+                driver.get(f'https://hanja.dict.naver.com/#/search?query={hanja}')
+                WebDriverWait(driver, 60).until(
+                    ec.presence_of_element_located((By.CSS_SELECTOR, '#searchLetterPage_content'))
+                )
+                
+                html = driver.page_source
+                soup = BeautifulSoup(html, 'html.parser')
+                
+                mean = soup.select_one(".mean").text.strip()
+                stroke = soup.find('div', string='총 획수').find_next_sibling().text.split("획")[0]
+                
+                Hanja.objects.create(hanja=hanja, mean=mean, stroke=stroke)
+            # L.append(f'{i}위 {hanja}: {mean}')
+            print(f'{i}위  {sorted_desc[i-1][0]}: {mean}')
+
+
+
 
 def upload_pdf(request):
     # traslation(request)
