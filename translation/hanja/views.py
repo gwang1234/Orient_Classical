@@ -4,6 +4,7 @@ from PyPDF2 import PdfReader
 import re
 from .models import Hanja
 from collections import Counter
+import io
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import Paragraph
 from reportlab.lib.styles import ParagraphStyle
-from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame
+from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, Paragraph, Image
 from reportlab.lib.units import cm
 from reportlab.platypus import Spacer
 
@@ -53,7 +54,7 @@ def pdf_frame():
 
 
 
-# pdf 생성
+# pdf 번역 생성
 def pdf_generation(L: list):
     doc = BaseDocTemplate(str('7 술이.pdf'), pagesize=A4)
     frontpage = PageTemplate(id='FrontPage',
@@ -61,6 +62,39 @@ def pdf_generation(L: list):
                     )
     doc.addPageTemplates(frontpage)
     doc.build(L)
+    
+# pdf 데이터분석 생성 
+def pdf_generation(L: list, df: pd.DataFrame):
+    labels = df['한자']
+    frequency = df['빈도수']
+    
+    fig = plt.figure(figsize=(8,8)) ## 캔버스 생성
+    fig.set_facecolor('white')
+    ax = fig.add_subplot()
+    
+    pie = ax.pie(frequency, ## 파이차트 출력
+    startangle=90, ## 시작점을 90도(degree)로 지정
+    counterclock=False, ## 시계 방향으로 그린다.
+    autopct=lambda p : '{:.2f}%'.format(p), ## 퍼센티지 출력
+    wedgeprops=dict(width=0.5) ## 중간의 반지름 0.5만큼 구멍을 뚫어준다.
+    )
+    font_path = "C:/Windows/Fonts/malgun.ttf"  # 'Malgun Gothic' 폰트 경로
+    font_prop = fm.FontProperties(fname=font_path)
+    plt.title("한자 빈도수", fontproperties=font_prop, fontsize=20)
+    plt.rcParams['font.family'] = 'Malgun Gothic'
+    plt.legend(pie[0],labels) ## 범례 표시
+    
+    img_buffer = io.BytesIO()
+    plt.savefig(img_buffer, format='png', bbox_inches='tight')
+    img_buffer.seek(0)
+    img = Image(image_buffer, width=300, height=200)
+        
+    doc = BaseDocTemplate(str('데이터분석.pdf'), pagesize=A4)
+    frontpage = PageTemplate(id='FrontPage', frames=[pdf_frame()])
+    doc.addPageTemplates(frontpage)
+    
+    
+    doc.build([L, img])
 
 
 
@@ -158,32 +192,14 @@ def hanja_analysis(request):
             sorted_desc = sorted_desc[:20]
         df = pd.DataFrame(sorted_desc, columns=['한자', '빈도수'])
         
-        labels = df['한자']
-        frequency = df['빈도수']
-        
-        fig = plt.figure(figsize=(8,8)) ## 캔버스 생성
-        fig.set_facecolor('white')
-        ax = fig.add_subplot()
-        
-        pie = ax.pie(frequency, ## 파이차트 출력
-        startangle=90, ## 시작점을 90도(degree)로 지정
-        counterclock=False, ## 시계 방향으로 그린다.
-        autopct=lambda p : '{:.2f}%'.format(p), ## 퍼센티지 출력
-        wedgeprops=dict(width=0.5) ## 중간의 반지름 0.5만큼 구멍을 뚫어준다.
-        )
-        font_path = "C:/Windows/Fonts/malgun.ttf"  # 'Malgun Gothic' 폰트 경로
-        font_prop = fm.FontProperties(fname=font_path)
-        plt.title("한자 빈도수", fontproperties=font_prop, fontsize=20)
-        plt.rcParams['font.family'] = 'Malgun Gothic'
-    
-        plt.legend(pie[0],labels) ## 범례 표시
-        plt.savefig("chart.png", dpi=300)
         
         for i in range(1, len(sorted_desc)+1):
             hanja = sorted_desc[i-1][0]
             mean = ""
             try:
                 mean = Hanja.objects.get(hanja=hanja).mean
+            except Hanja.MultipleObjectsReturned:
+                mean = Hanja.objects.filter(hanja=hanja).first().mean
             except Hanja.DoesNotExist:
                 driver = webdriver.Chrome()
                 driver.get(f'https://hanja.dict.naver.com/#/search?query={hanja}')
@@ -198,8 +214,9 @@ def hanja_analysis(request):
                 stroke = soup.find('div', string='총 획수').find_next_sibling().text.split("획")[0]
                 
                 Hanja.objects.create(hanja=hanja, mean=mean, stroke=stroke)
-            # L.append(f'{i}위 {hanja}: {mean}')
-            print(f'{i}위  {sorted_desc[i-1][0]}: {mean}')
+            L.append(f'{i}위 {hanja}: {mean}')
+            
+        pdf_generation(L, df)
 
 
 
