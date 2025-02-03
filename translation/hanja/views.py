@@ -13,16 +13,13 @@ import matplotlib.font_manager as fm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import Paragraph
 from reportlab.lib.styles import ParagraphStyle
-from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, Paragraph, Image
+from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, Paragraph, Image, Spacer
 from reportlab.lib.units import cm
-from reportlab.platypus import Spacer
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
@@ -62,9 +59,12 @@ def pdf_generation(L: list):
                     )
     doc.addPageTemplates(frontpage)
     doc.build(L)
+
+
+
+# 도넛 그래프 생성 
+def pie_graph(df: pd.DataFrame):
     
-# pdf 데이터분석 생성 
-def pdf_generation(L: list, df: pd.DataFrame):
     labels = df['한자']
     frequency = df['빈도수']
     
@@ -78,6 +78,8 @@ def pdf_generation(L: list, df: pd.DataFrame):
     autopct=lambda p : '{:.2f}%'.format(p), ## 퍼센티지 출력
     wedgeprops=dict(width=0.5) ## 중간의 반지름 0.5만큼 구멍을 뚫어준다.
     )
+    
+    
     font_path = "C:/Windows/Fonts/malgun.ttf"  # 'Malgun Gothic' 폰트 경로
     font_prop = fm.FontProperties(fname=font_path)
     plt.title("한자 빈도수", fontproperties=font_prop, fontsize=20)
@@ -87,14 +89,26 @@ def pdf_generation(L: list, df: pd.DataFrame):
     img_buffer = io.BytesIO()
     plt.savefig(img_buffer, format='png', bbox_inches='tight')
     img_buffer.seek(0)
-    img = Image(image_buffer, width=300, height=200)
+    return img_buffer
+
+
+
+# pdf 데이터분석 생성 
+def pdf_generation(L, df: pd.DataFrame):
+    
+    img_buffer = pie_graph(df)
+    img = Image(img_buffer, width=400, height=400)
         
     doc = BaseDocTemplate(str('데이터분석.pdf'), pagesize=A4)
     frontpage = PageTemplate(id='FrontPage', frames=[pdf_frame()])
     doc.addPageTemplates(frontpage)
     
-    
-    doc.build([L, img])
+    elements = []  # PDF에 추가할 요소 리스트
+    elements.append(img)
+    elements.append(Spacer(1, 20))  # 20pt 간격 추가
+    for text in L:
+        elements.append(Paragraph(text, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
+    doc.build(elements)  # PDF 생성
 
 
 
@@ -169,7 +183,9 @@ def traslation(request):
 
 # 한자 분석 
 def hanja_analysis(request):
+    pdfmetrics.registerFont(TTFont("맑은고딕", "malgun.ttf"))
     
+    M=[]
     L=[]
     
     if request.method == 'POST' and request.FILES.get('pdf'):
@@ -184,9 +200,9 @@ def hanja_analysis(request):
                 # 한글, 숫자, 영어, 특수문자 제거
                 hanjas = re.sub(r'[A-z가-힣0-9\s~"!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
                 for hanja in hanjas:
-                    L.append(hanja)
+                    M.append(hanja)
         
-        count = Counter(L)
+        count = Counter(M)
         sorted_desc = sorted(count.items(), key=lambda x: x[1], reverse=True)
         if len(sorted_desc) > 20:
             sorted_desc = sorted_desc[:20]
@@ -214,13 +230,15 @@ def hanja_analysis(request):
                 stroke = soup.find('div', string='총 획수').find_next_sibling().text.split("획")[0]
                 
                 Hanja.objects.create(hanja=hanja, mean=mean, stroke=stroke)
-            L.append(f'{i}위 {hanja}: {mean}')
+            texts = str(i)+"위  " + hanja+": " + mean
+            L.append(texts)
             
         pdf_generation(L, df)
 
 
 
 
+# pdf 업로드 
 def upload_pdf(request):
     # traslation(request)
     hanja_analysis(request)
