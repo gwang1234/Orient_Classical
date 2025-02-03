@@ -6,6 +6,8 @@ from .models import Hanja
 from collections import Counter
 import io
 
+import matplotlib
+matplotlib.use("Agg")
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
@@ -109,6 +111,8 @@ def pdf_generation(L, df: pd.DataFrame):
     for text in L:
         elements.append(Paragraph(text, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
     doc.build(elements)  # PDF 생성
+    
+    img_buffer.close()
 
 
 
