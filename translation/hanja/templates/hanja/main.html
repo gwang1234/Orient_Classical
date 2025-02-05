@@ -7,18 +7,18 @@
         </div>
         <div class="section">
             <div class="translate">
-                <div class="check">
-                    <label class="custom-checkbox">
-                        <input type="checkbox" id="checkbox1" name="checkbox1" checked>
-                        한문 번역
-                    </label>
-                    <label class="custom-checkbox">
-                        <input type="checkbox" id="checkbox2" name="checkbox2">
-                        한문 분석
-                    </label>
-                </div>
                 <form id="pdf-upload-form" enctype="multipart/form-data">
                     {% csrf_token %}
+                    <div class="check">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" id="checkbox1" name="checkbox1" checked>
+                            한문 번역
+                        </label>
+                        <label class="custom-checkbox">
+                            <input type="checkbox" id="checkbox2" name="checkbox2">
+                            한문 분석
+                        </label>
+                    </div>
                     <div class="put" onclick="document.getElementById('pdf-input').click()">
                         <div>+</div>
                         <div>이곳에 pdf/hwp 파일을 올려주세요</div>
@@ -41,7 +41,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <!-- <script>
         let checkbox1 = document.querySelector('#checkbox1');
         let checkbox2 = document.querySelector('#checkbox2');
 
@@ -57,6 +57,6 @@
             console.log("checkbox1 상태:", document.getElementById('checkbox1').checked);
             console.log("checkbox2 상태:", document.getElementById('checkbox2').checked);
         }
-    </script>
+    </script> -->
     <script src="../../static/js/main.js"></script>
 {% endblock %}

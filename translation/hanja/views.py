@@ -241,13 +241,22 @@ def hanja_analysis(pdf):
 
 
 
+def check(request):
+    checkbox1 = request.POST.get("checkbox1") 
+    checkbox2 = request.POST.get("checkbox2")
+        
+    print(checkbox1)
+
+
 # pdf 업로드 
 def upload_pdf(request):
     if request.method == 'POST' and request.FILES.get('pdf'):
+        
         pdf = request.FILES.get('pdf')
         checkbox1 = request.POST.get("checkbox1") 
         checkbox2 = request.POST.get("checkbox2")
         
+        print("POST data:", request.POST)
         print(checkbox1)
     
         if pdf is None:

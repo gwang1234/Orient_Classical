@@ -1,19 +1,12 @@
-function uploadPDF() {
-    const pdf = document.getElementById('pdf-input');
+function check() {
     const checkbox1 = document.getElementById('checkbox1').checked;
     const checkbox2 = document.getElementById('checkbox2').checked;
 
     let formdata = new FormData();
-    formdata.append('pdf',pdf.files[0])
-    formdata.append('checkbox1', "t")
+    formdata.append('checkbox1', checkbox1 ? "t" : "f")
     formdata.append('checkbox2', checkbox2 ? "t" : "f")
 
-    // FormData 내용 확인
-    for (let pair of formdata.entries()) {
-        console.log(pair[0], pair[1]);
-    }
-
-    fetch ("/upload-pdf/", {
+    fetch ("/index/", {
         method: "POST",
         body: formdata,
     })
@@ -24,4 +17,27 @@ function uploadPDF() {
     return response.json();
     })
     .catch(error => console.error('Error: ',error))
+}
+
+function uploadPDF() {
+    const pdf = document.getElementById('pdf-input');
+    const checkbox1 = document.getElementById('checkbox1').checked;
+    const checkbox2 = document.getElementById('checkbox2').checked;
+
+    const formData = new FormData();
+    formData.append('pdf', pdf.files[0]);  // 파일 데이터
+    
+    const jsonData = JSON.stringify({
+        checkbox1: checkbox1 ? "t" : "f",
+        checkbox2: checkbox2 ? "t" : "f"
+    });
+    
+    fetch("/upload-pdf/", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+    
 }
