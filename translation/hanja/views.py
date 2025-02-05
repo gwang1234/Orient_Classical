@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from PyPDF2 import PdfReader
 import re
 from .models import Hanja
@@ -54,7 +54,7 @@ def pdf_frame():
 
 
 # pdf 번역 생성
-def pdf_generation(L: list):
+def pdf_generation1(L: list):
     doc = BaseDocTemplate(str('7 술이.pdf'), pagesize=A4)
     frontpage = PageTemplate(id='FrontPage',
                                 frames=[pdf_frame()]
@@ -118,132 +118,150 @@ def pdf_generation(L, df: pd.DataFrame):
 
 
 # 번역 함수
-def traslation(request):
+def traslation(pdf):
     
     # 폰트 지정 
     pdfmetrics.registerFont(TTFont("맑은고딕", "malgun.ttf"))
     
     L=[]
 
-    if request.method == 'POST' and request.FILES.get('pdf'):
-        pdf_file = request.FILES.get('pdf')
-        reader = PdfReader(pdf_file)
-        
-        pages = reader.pages
-        for page in pages:
-            text = page.extract_text()
-            lines = text.split('\n')
-            for line in lines:
-                # 한글, 숫자, 영어, 특수문자 제거
-                only_hanja = re.sub(r'[A-z가-힣0-9\s~"!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
-                if line.strip() == "":
-                    continue
-                    # L.append(Spacer(1, 20))
-                elif unquote(line) == "\u200B":
+    # if request.method == 'POST' and request.FILES.get('pdf'):
+    # pdf_file = request.FILES.get('pdf')
+    reader = PdfReader(pdf)
+    
+    pages = reader.pages
+    for page in pages:
+        text = page.extract_text()
+        lines = text.split('\n')
+        for line in lines:
+            # 한글, 숫자, 영어, 특수문자 제거
+            only_hanja = re.sub(r'[A-z가-힣0-9\s~"!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
+            if line.strip() == "":
+                continue
+                # L.append(Spacer(1, 20))
+            elif unquote(line) == "\u200B":
+                L.append(Spacer(1, 20))
+            else:
+                if (only_hanja == ""):
+                    L.append(Paragraph(line, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
                     L.append(Spacer(1, 20))
                 else:
-                    if (only_hanja == ""):
-                        L.append(Paragraph(line, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
-                        L.append(Spacer(1, 20))
-                    else:
-                        L.append(Paragraph(line, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
-                        analysis = "[ "
-                        
-                        for hanja in only_hanja:
-                            try:
-                                hanja_entry = Hanja.objects.get(hanja=hanja).mean
-                                analysis += "( " + hanja + ": " + hanja_entry + ") "
-                                
-                            except Hanja.DoesNotExist:
-                                print("한자명:" + hanja)
-                                
-                                driver = webdriver.Chrome()
-                                driver.get(f'https://hanja.dict.naver.com/#/search?query={hanja}')
-                                WebDriverWait(driver, 60).until(
-                                    ec.presence_of_element_located((By.CSS_SELECTOR, '#searchLetterPage_content'))
-                                )
-                                
-                                html = driver.page_source
-                                soup = BeautifulSoup(html, 'html.parser')
-                                
-                                mean = soup.select_one(".mean").text.strip()
-                                stroke = soup.find('div', string='총 획수').find_next_sibling().text.split("획")[0]
-                                
-                                analysis += "( " + hanja + ": " + mean + ") " 
-                                Hanja.objects.create(hanja=hanja, mean=mean, stroke=stroke)
-                                
-                            except Hanja.MultipleObjectsReturned:
-                                hanja_entry = Hanja.objects.filter(hanja=hanja).first().mean
-                                analysis += "( " + hanja + ": " + hanja_entry + ") "
-                        
-                        analysis += "]"      
-                        L.append(Paragraph(analysis, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
-                        # L.append(Spacer(1, 20))
+                    L.append(Paragraph(line, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
+                    analysis = "[ "
+                    
+                    for hanja in only_hanja:
+                        try:
+                            hanja_entry = Hanja.objects.get(hanja=hanja).mean
+                            analysis += "( " + hanja + ": " + hanja_entry + ") "
+                            
+                        except Hanja.DoesNotExist:
+                            print("한자명:" + hanja)
+                            
+                            driver = webdriver.Chrome()
+                            driver.get(f'https://hanja.dict.naver.com/#/search?query={hanja}')
+                            WebDriverWait(driver, 60).until(
+                                ec.presence_of_element_located((By.CSS_SELECTOR, '#searchLetterPage_content'))
+                            )
+                            
+                            html = driver.page_source
+                            soup = BeautifulSoup(html, 'html.parser')
+                            
+                            mean = soup.select_one(".mean").text.strip()
+                            stroke = soup.find('div', string='총 획수').find_next_sibling().text.split("획")[0]
+                            
+                            analysis += "( " + hanja + ": " + mean + ") " 
+                            Hanja.objects.create(hanja=hanja, mean=mean, stroke=stroke)
+                            
+                        except Hanja.MultipleObjectsReturned:
+                            hanja_entry = Hanja.objects.filter(hanja=hanja).first().mean
+                            analysis += "( " + hanja + ": " + hanja_entry + ") "
+                    
+                    analysis += "]"      
+                    L.append(Paragraph(analysis, ParagraphStyle(name='fd',fontName='맑은고딕',fontSize=11,leading=20)))
+                    # L.append(Spacer(1, 20))
             
-        pdf_generation(L)
+        pdf_generation1(L)
 
 
 
 
 # 한자 분석 
-def hanja_analysis(request):
+def hanja_analysis(pdf):
     pdfmetrics.registerFont(TTFont("맑은고딕", "malgun.ttf"))
     
     M=[]
     L=[]
     
-    if request.method == 'POST' and request.FILES.get('pdf'):
-        pdf = request.FILES.get("pdf")
-        reader = PdfReader(pdf)
-        pages = reader.pages
-        
-        for page in pages:
-            text = page.extract_text()
-            lines = text.split('\n')
-            for line in lines:
-                # 한글, 숫자, 영어, 특수문자 제거
-                hanjas = re.sub(r'[A-z가-힣0-9\s~"!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
-                for hanja in hanjas:
-                    M.append(hanja)
-        
-        count = Counter(M)
-        sorted_desc = sorted(count.items(), key=lambda x: x[1], reverse=True)
-        if len(sorted_desc) > 20:
-            sorted_desc = sorted_desc[:20]
-        df = pd.DataFrame(sorted_desc, columns=['한자', '빈도수'])
-        
-        
-        for i in range(1, len(sorted_desc)+1):
-            hanja = sorted_desc[i-1][0]
-            mean = ""
-            try:
-                mean = Hanja.objects.get(hanja=hanja).mean
-            except Hanja.MultipleObjectsReturned:
-                mean = Hanja.objects.filter(hanja=hanja).first().mean
-            except Hanja.DoesNotExist:
-                driver = webdriver.Chrome()
-                driver.get(f'https://hanja.dict.naver.com/#/search?query={hanja}')
-                WebDriverWait(driver, 60).until(
-                    ec.presence_of_element_located((By.CSS_SELECTOR, '#searchLetterPage_content'))
-                )
-                
-                html = driver.page_source
-                soup = BeautifulSoup(html, 'html.parser')
-                
-                mean = soup.select_one(".mean").text.strip()
-                stroke = soup.find('div', string='총 획수').find_next_sibling().text.split("획")[0]
-                
-                Hanja.objects.create(hanja=hanja, mean=mean, stroke=stroke)
-            texts = str(i)+"위  " + hanja+": " + mean
-            L.append(texts)
+
+    reader = PdfReader(pdf)
+    pages = reader.pages
+    
+    for page in pages:
+        text = page.extract_text()
+        lines = text.split('\n')
+        for line in lines:
+            # 한글, 숫자, 영어, 특수문자 제거
+            hanjas = re.sub(r'[A-z가-힣0-9\s~"!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
+            for hanja in hanjas:
+                M.append(hanja)
+    
+    count = Counter(M)
+    sorted_desc = sorted(count.items(), key=lambda x: x[1], reverse=True)
+    if len(sorted_desc) > 20:
+        sorted_desc = sorted_desc[:20]
+    df = pd.DataFrame(sorted_desc, columns=['한자', '빈도수'])
+    
+    
+    for i in range(1, len(sorted_desc)+1):
+        hanja = sorted_desc[i-1][0]
+        mean = ""
+        try:
+            mean = Hanja.objects.get(hanja=hanja).mean
+        except Hanja.MultipleObjectsReturned:
+            mean = Hanja.objects.filter(hanja=hanja).first().mean
+        except Hanja.DoesNotExist:
+            driver = webdriver.Chrome()
+            driver.get(f'https://hanja.dict.naver.com/#/search?query={hanja}')
+            WebDriverWait(driver, 60).until(
+                ec.presence_of_element_located((By.CSS_SELECTOR, '#searchLetterPage_content'))
+            )
             
-        pdf_generation(L, df)
+            html = driver.page_source
+            soup = BeautifulSoup(html, 'html.parser')
+            
+            mean = soup.select_one(".mean").text.strip()
+            stroke = soup.find('div', string='총 획수').find_next_sibling().text.split("획")[0]
+            
+            Hanja.objects.create(hanja=hanja, mean=mean, stroke=stroke)
+        texts = str(i)+"위  " + hanja+": " + mean
+        L.append(texts)
+        
+    pdf_generation(L, df)
 
 
 
 
 # pdf 업로드 
 def upload_pdf(request):
-    # traslation(request)
-    hanja_analysis(request)
+    if request.method == 'POST' and request.FILES.get('pdf'):
+        pdf = request.FILES.get('pdf')
+        checkbox1 = request.POST.get("checkbox1") 
+        checkbox2 = request.POST.get("checkbox2")
+        
+        print(checkbox1)
+    
+        if pdf is None:
+            return JsonResponse({"error": "파일이 업로드되지 않았습니다."}, status=400)
+        
+        if (checkbox1 and not checkbox2):
+            print("aaaa")
+            traslation(pdf)
+        if (not checkbox1 and checkbox2):
+            print("bbbbb")
+            hanja_analysis(pdf)
+        if (checkbox1 and checkbox2):
+            print("ccccc")
+            traslation(pdf)
+            hanja_analysis(pdf)
+
     return HttpResponse("fdgdf")

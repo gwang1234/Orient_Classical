@@ -9,11 +9,11 @@
             <div class="translate">
                 <div class="check">
                     <label class="custom-checkbox">
-                        <input type="checkbox" id="checkbox1" checked>
+                        <input type="checkbox" id="checkbox1" name="checkbox1" checked>
                         한문 번역
                     </label>
                     <label class="custom-checkbox">
-                        <input type="checkbox" id="checkbox2">
+                        <input type="checkbox" id="checkbox2" name="checkbox2">
                         한문 분석
                     </label>
                 </div>
@@ -21,7 +21,7 @@
                     {% csrf_token %}
                     <div class="put" onclick="document.getElementById('pdf-input').click()">
                         <div>+</div>
-                        <div>이곳에 pdf 파일을 올려주세요</div>
+                        <div>이곳에 pdf/hwp 파일을 올려주세요</div>
                         <input type="file" id="pdf-input" accept="application/pdf" style="display: none;" onchange="uploadPDF()">
                     </div>
                 </form>
@@ -29,17 +29,34 @@
             <div class="explain">
                 <p>이용 방법</p>
                 <p>
-                    <div>1. 원하는 PDF를 체크박스로</div>
+                    <div>1. 원하는 PDF,hwp를 체크박스로</div>
                     <div>선택해주세요.</div><br><br>
-                    <div>2. 한문번역은 PDF의 한자를 </div>
+                    <div>2. 한문번역은 PDF,hwp의 한자를 </div>
                     <div>직독으로 번역하고,</div> 
                     <div> 한문분석은 PDF에 자주 나오는 한문을 </div> 
                     <div>분석하여 그래프로 보여드립니다.</div><br><br>
-                    <div>3. PDF를 올리시면 해당 PDF를</div>
+                    <div>3. PDF,hwp를 올리시면 해당 PDF를</div>
                     <div>받으실 수 있습니다.</div>
                 </p>
             </div>
         </div>
     </div>
+    <script>
+        let checkbox1 = document.querySelector('#checkbox1');
+        let checkbox2 = document.querySelector('#checkbox2');
+
+        if (checkbox1.checked) {
+            alert("체크됨")
+        }
+
+        // 체크박스 상태 변경 시 반영
+        document.getElementById('checkbox1').addEventListener('change', updateCheckboxState);
+        document.getElementById('checkbox2').addEventListener('change', updateCheckboxState);
+
+        function updateCheckboxState() {
+            console.log("checkbox1 상태:", document.getElementById('checkbox1').checked);
+            console.log("checkbox2 상태:", document.getElementById('checkbox2').checked);
+        }
+    </script>
     <script src="../../static/js/main.js"></script>
 {% endblock %}
