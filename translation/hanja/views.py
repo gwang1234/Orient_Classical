@@ -52,18 +52,6 @@ def pdf_frame():
 
 
 
-
-# pdf 번역 생성
-def pdf_generation1(L: list):
-    doc = BaseDocTemplate(str('7 술이.pdf'), pagesize=A4)
-    frontpage = PageTemplate(id='FrontPage',
-                                frames=[pdf_frame()]
-                    )
-    doc.addPageTemplates(frontpage)
-    doc.build(L)
-
-
-
 # 도넛 그래프 생성 
 def pie_graph(df: pd.DataFrame):
     
@@ -95,7 +83,7 @@ def pie_graph(df: pd.DataFrame):
 
 
 
-# pdf 데이터분석 생성 
+# pdf 한자분석 생성 
 def pdf_generation(L, df: pd.DataFrame):
     
     img_buffer = pie_graph(df)
@@ -113,7 +101,80 @@ def pdf_generation(L, df: pd.DataFrame):
     doc.build(elements)  # PDF 생성
     
     img_buffer.close()
+    
+    
+    
+# 한자 분석 
+def hanja_analysis(pdf):
+    pdfmetrics.registerFont(TTFont("맑은고딕", "malgun.ttf"))
+    
+    M=[]
+    L=[]
+    
 
+    reader = PdfReader(pdf)
+    pages = reader.pages
+    
+    for page in pages:
+        text = page.extract_text()
+        lines = text.split('\n')
+        for line in lines:
+            # 한글, 숫자, 영어, 특수문자 제거
+            hanjas = re.sub(r'[A-z가-힣0-9\s~"!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
+            for hanja in hanjas:
+                M.append(hanja)
+    
+    count = Counter(M)
+    sorted_desc = sorted(count.items(), key=lambda x: x[1], reverse=True)
+    if len(sorted_desc) > 20:
+        sorted_desc = sorted_desc[:20]
+    df = pd.DataFrame(sorted_desc, columns=['한자', '빈도수'])
+    
+    
+    for i in range(1, len(sorted_desc)+1):
+        hanja = sorted_desc[i-1][0]
+        mean = ""
+        try:
+            mean = Hanja.objects.get(hanja=hanja).mean
+        except Hanja.MultipleObjectsReturned:
+            mean = Hanja.objects.filter(hanja=hanja).first().mean
+        except Hanja.DoesNotExist:
+            driver = webdriver.Chrome()
+            driver.get(f'https://hanja.dict.naver.com/#/search?query={hanja}')
+            WebDriverWait(driver, 60).until(
+                ec.presence_of_element_located((By.CSS_SELECTOR, '#searchLetterPage_content'))
+            )
+            
+            html = driver.page_source
+            soup = BeautifulSoup(html, 'html.parser')
+            
+            mean = soup.select_one(".mean").text.strip()
+            stroke = soup.find('div', string='총 획수').find_next_sibling().text.split("획")[0]
+            
+            Hanja.objects.create(hanja=hanja, mean=mean, stroke=stroke)
+        texts = str(i)+"위  " + hanja+": " + mean
+        L.append(texts)
+        
+    pdf_generation(L, df)
+
+
+
+
+
+
+
+
+
+
+
+# pdf 번역 생성
+def pdf_generation1(L: list):
+    doc = BaseDocTemplate(str('7 술이.pdf'), pagesize=A4)
+    frontpage = PageTemplate(id='FrontPage',
+                                frames=[pdf_frame()]
+                    )
+    doc.addPageTemplates(frontpage)
+    doc.build(L)
 
 
 
@@ -185,92 +246,19 @@ def traslation(pdf):
 
 
 
-# 한자 분석 
-def hanja_analysis(pdf):
-    pdfmetrics.registerFont(TTFont("맑은고딕", "malgun.ttf"))
-    
-    M=[]
-    L=[]
-    
-
-    reader = PdfReader(pdf)
-    pages = reader.pages
-    
-    for page in pages:
-        text = page.extract_text()
-        lines = text.split('\n')
-        for line in lines:
-            # 한글, 숫자, 영어, 특수문자 제거
-            hanjas = re.sub(r'[A-z가-힣0-9\s~"!@#$%^&*()_+=\-:;,.<>?/|\\{}[\] ]', '', line)
-            for hanja in hanjas:
-                M.append(hanja)
-    
-    count = Counter(M)
-    sorted_desc = sorted(count.items(), key=lambda x: x[1], reverse=True)
-    if len(sorted_desc) > 20:
-        sorted_desc = sorted_desc[:20]
-    df = pd.DataFrame(sorted_desc, columns=['한자', '빈도수'])
-    
-    
-    for i in range(1, len(sorted_desc)+1):
-        hanja = sorted_desc[i-1][0]
-        mean = ""
-        try:
-            mean = Hanja.objects.get(hanja=hanja).mean
-        except Hanja.MultipleObjectsReturned:
-            mean = Hanja.objects.filter(hanja=hanja).first().mean
-        except Hanja.DoesNotExist:
-            driver = webdriver.Chrome()
-            driver.get(f'https://hanja.dict.naver.com/#/search?query={hanja}')
-            WebDriverWait(driver, 60).until(
-                ec.presence_of_element_located((By.CSS_SELECTOR, '#searchLetterPage_content'))
-            )
-            
-            html = driver.page_source
-            soup = BeautifulSoup(html, 'html.parser')
-            
-            mean = soup.select_one(".mean").text.strip()
-            stroke = soup.find('div', string='총 획수').find_next_sibling().text.split("획")[0]
-            
-            Hanja.objects.create(hanja=hanja, mean=mean, stroke=stroke)
-        texts = str(i)+"위  " + hanja+": " + mean
-        L.append(texts)
-        
-    pdf_generation(L, df)
 
 
 
 
-def check(request):
-    checkbox1 = request.POST.get("checkbox1") 
-    checkbox2 = request.POST.get("checkbox2")
-        
-    print(checkbox1)
+
 
 
 # pdf 업로드 
 def upload_pdf(request):
-    if request.method == 'POST' and request.FILES.get('pdf'):
-        
-        pdf = request.FILES.get('pdf')
-        checkbox1 = request.POST.get("checkbox1") 
-        checkbox2 = request.POST.get("checkbox2")
-        
-        print("POST data:", request.POST)
-        print(checkbox1)
     
-        if pdf is None:
-            return JsonResponse({"error": "파일이 업로드되지 않았습니다."}, status=400)
-        
-        if (checkbox1 and not checkbox2):
-            print("aaaa")
-            traslation(pdf)
-        if (not checkbox1 and checkbox2):
-            print("bbbbb")
-            hanja_analysis(pdf)
-        if (checkbox1 and checkbox2):
-            print("ccccc")
-            traslation(pdf)
-            hanja_analysis(pdf)
+    if request.method == 'POST' and request.FILES.get('pdf'):
+        pdf = request.FILES.get('pdf')
+        traslation(pdf)
+        hanja_analysis(pdf)
 
     return HttpResponse("fdgdf")

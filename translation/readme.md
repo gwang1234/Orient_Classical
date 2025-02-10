@@ -3,7 +3,7 @@
 <br>
 
 > 개인 프로젝트  
-> 개발기간: 2025.01.24 ~ 
+> 개발기간: 2025.01.24 ~ 2025.02.05
 
 <br>
 
@@ -14,8 +14,6 @@
 ### 프로젝트 소개
 - 한자가 포함된 PDF 파일을 한 줄씩 번역하여 번역된 PDF 파일로 생성한 후 사용자에게 제공합니다.
 - PDF 파일의 한자 빈도수를 분석하여 외워야 할 순위, 빈도 그래프를 PDF로 제공합니다.
-- 한자번역, 한자분석을 체크박스로 선택하여 원하는 PDF를 받을 수 있습니다.
-- 상용한자 1800제로 게임을 하여 한자를 쉽게 익힐 수 있습니다.
 
 ### 개발환경
 - 백엔드: python 3.12.8, Django 5.1.4, Mysql 8.0.36
@@ -26,7 +24,9 @@
 ```
 │   db.sqlite3
 │   manage.py
+│   my_settings.py
 │   readme.md
+│   test.ipynb
 │
 ├───hanja
 │   │   admin.py
@@ -38,9 +38,11 @@
 │   │   __init__.py
 │   │
 │   ├───migrations
+│   │   │   0001_initial.py
 │   │   │   __init__.py
 │   │   │
 │   │   └───__pycache__
+│   │           0001_initial.cpython-312.pyc
 │   │           __init__.cpython-312.pyc
 │   │
 │   ├───static
@@ -48,9 +50,12 @@
 │   │   │       header.css
 │   │   │       main.css
 │   │   │
-│   │   └───img
-│   │           hanji.png
-│   │           site.png
+│   │   ├───img
+│   │   │       hanji.png
+│   │   │       site.png
+│   │   │
+│   │   └───js
+│   │           main.js
 │   │
 │   ├───templates
 │   │   └───hanja
@@ -58,15 +63,28 @@
 │   │           main.html
 │   │
 │   └───__pycache__
+│           admin.cpython-312.pyc
+│           apps.cpython-312.pyc
+│           models.cpython-312.pyc
+│           urls.cpython-312.pyc
+│           views.cpython-312.pyc
+│           __init__.cpython-312.pyc
 │
-└───mysite
-    │   asgi.py
-    │   settings.py
-    │   urls.py
-    │   wsgi.py
-    │   __init__.py
-    │
-    └───__pycache__
+├───mysite
+│   │   asgi.py
+│   │   settings.py
+│   │   urls.py
+│   │   wsgi.py
+│   │   __init__.py
+│   │
+│   └───__pycache__
+│           settings.cpython-312.pyc
+│           urls.cpython-312.pyc
+│           wsgi.cpython-312.pyc
+│           __init__.cpython-312.pyc
+│
+└───__pycache__
+        my_settings.cpython-312.pyc
 
 ```
 
