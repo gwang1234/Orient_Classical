@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, FileResponse
 from PyPDF2 import PdfReader
 import re
 from .models import Hanja
@@ -85,11 +85,12 @@ def pie_graph(df: pd.DataFrame):
 
 # pdf 한자분석 생성 
 def pdf_generation(L, df: pd.DataFrame):
+    path = "C:\\html\\Orient_Classical\\translation\\hanja\\static\\pdf\\한자분석.pdf"
     
     img_buffer = pie_graph(df)
     img = Image(img_buffer, width=400, height=400)
         
-    doc = BaseDocTemplate(str('데이터분석.pdf'), pagesize=A4)
+    doc = BaseDocTemplate(path, pagesize=A4)
     frontpage = PageTemplate(id='FrontPage', frames=[pdf_frame()])
     doc.addPageTemplates(frontpage)
     
@@ -169,12 +170,15 @@ def hanja_analysis(pdf):
 
 # pdf 번역 생성
 def pdf_generation1(L: list):
-    doc = BaseDocTemplate(str('7 술이.pdf'), pagesize=A4)
+    path = "C:\\html\\Orient_Classical\\translation\\hanja\\static\\pdf\\한자번역.pdf"
+    
+    doc = BaseDocTemplate(path, pagesize=A4)
     frontpage = PageTemplate(id='FrontPage',
                                 frames=[pdf_frame()]
                     )
     doc.addPageTemplates(frontpage)
     doc.build(L)
+    # return FileResponse(open(path, "rb"), as_attachment=True, filename="7_술이.pdf")
 
 
 
@@ -260,5 +264,5 @@ def upload_pdf(request):
         pdf = request.FILES.get('pdf')
         traslation(pdf)
         hanja_analysis(pdf)
-
-    return HttpResponse("fdgdf")
+        
+    return HttpResponse("ok")
